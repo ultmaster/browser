@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Stacker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Image Stacker Tool</h1>
+
+  <div class="controls">
+    <div class="input-group">
+      <label for="imageInput1">Image 1:</label>
+      <input type="file" id="imageInput1" accept="image/*" required>
+      <img id="preview1" class="preview-img" src="#" alt="Image 1 Preview" style="display: none;"/>
+    </div>
+
+    <div class="input-group">
+      <label for="imageInput2">Image 2 (Optional):</label>
+      <input type="file" id="imageInput2" accept="image/*">
+       <img id="preview2" class="preview-img" src="#" alt="Image 2 Preview" style="display: none;"/>
+    </div>
+
+    <div class="input-group">
+      <label for="aspectRatioInput">Target Aspect Ratio:</label>
+      <input type="text" id="aspectRatioInput" value="3:4" placeholder="e.g., 5:7 or 16:9">
+    </div>
+
+    <div class="input-group" id="pos1-group">
+       <label for="position1">Image 1 Crop Position:</label>
+      <select id="position1">
+        <option value="center" selected>Center</option>
+        <option value="top">Top</option>
+        <option value="bottom">Bottom</option>
+        <option value="left">Left</option>
+        <option value="right">Right</option>
+      </select>
+    </div>
+
+     <div class="input-group" id="pos2-group" style="display: none;">
+      <label for="position2">Image 2 Crop Position:</label>
+      <select id="position2">
+        <option value="center" selected>Center</option>
+        <option value="top">Top</option>
+        <option value="bottom">Bottom</option>
+        <option value="left">Left</option>
+        <option value="right">Right</option>
+       </select>
+    </div>
+
+    <button id="processButton">Process Image(s)</button>
+  </div>
+
+  <div class="results">
+    <h2>Result</h2>
+    <p id="statusMessage"></p>
+    <canvas id="outputCanvas"></canvas>
+    <a id="downloadLink" style="display: none;">Download Result</a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
