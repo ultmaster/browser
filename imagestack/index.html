@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Stack</title>
   <link rel="stylesheet" href="style.css">
-  </head>
+</head>
 <body>
   <h1>Image Stack Tool</h1>
 
@@ -21,6 +21,10 @@
       <input type="file" id="imageInput2" accept="image/*">
        <img id="preview2" class="preview-img" src="#" alt="Image 2 Preview" style="display: none;"/>
     </div>
+
+    <button id="clearInputsButton" class="secondary-button">Clear Selected Images</button>
+
+    <hr style="margin: 20px 0;">
 
     <div class="input-group">
       <label for="aspectRatioSelect">Target Aspect Ratio(s):</label>
@@ -70,7 +74,10 @@
     <h2>Results</h2>
     <p id="statusMessage"></p>
     <div id="resultsContainer"></div>
-    </div>
+    <button id="downloadAllSequentiallyButton" style="display: none; margin-top: 20px;">
+      Download All
+    </button>
+  </div>
 
   <canvas id="processingCanvas" style="display: none;"></canvas>
 

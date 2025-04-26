@@ -10,16 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const pos1Group = document.getElementById('pos1-group');
   const pos2Group = document.getElementById('pos2-group');
   const processButton = document.getElementById('processButton');
+  const clearInputsButton = document.getElementById('clearInputsButton'); // Get the new button
   const resultsContainer = document.getElementById('resultsContainer');
-  // downloadAllButton removed
+  const downloadAllSequentiallyButton = document.getElementById('downloadAllSequentiallyButton');
   const statusMessage = document.getElementById('statusMessage');
   const processingCanvas = document.getElementById('processingCanvas');
   const procCtx = processingCanvas.getContext('2d');
 
-  // generatedResults array removed (no longer needed for zipping)
+  let generatedResultsData = [];
 
-  // --- Helper Functions --- (parseAspectRatio, sanitizeFilename, generateOutputFilename, loadImage, displayPreview, cropImage, getSelectedAspectRatios - remain the same)
-
+  // --- Helper Functions --- (Remain the same)
   function parseAspectRatio(arStr) {
     try {
       const parts = arStr.split(':');
@@ -145,17 +145,45 @@ document.addEventListener('DOMContentLoaded', () => {
   imageInput1.addEventListener('change', () => displayPreview(imageInput1, preview1));
   imageInput2.addEventListener('change', () => {
     displayPreview(imageInput2, preview2);
-    pos2Group.style.display = imageInput2.files.length > 0 ? 'block' : 'none';
-    pos1Group.querySelector('label').textContent = imageInput2.files.length > 0
+    // Update UI based on second image presence
+    const hasSecondImage = imageInput2.files.length > 0;
+    pos2Group.style.display = hasSecondImage ? 'block' : 'none';
+    pos1Group.querySelector('label').textContent = hasSecondImage
       ? 'Image 1 Crop Position:'
       : 'Crop Position:';
   });
 
-  // Main Processing Logic
+  // Listener for the new Clear Inputs Button
+  clearInputsButton.addEventListener('click', () => {
+    // Clear file input values
+    imageInput1.value = null;
+    imageInput2.value = null;
+
+    // Hide previews
+    preview1.src = '#';
+    preview1.style.display = 'none';
+    preview2.src = '#';
+    preview2.style.display = 'none';
+
+    // Reset related UI elements
+    pos2Group.style.display = 'none';
+    pos1Group.querySelector('label').textContent = 'Crop Position:';
+
+    // Clear results and status
+    resultsContainer.innerHTML = '';
+    statusMessage.textContent = '';
+    generatedResultsData = []; // Clear stored results data
+    downloadAllSequentiallyButton.style.display = 'none'; // Hide download all button
+
+    console.log('Inputs and results cleared.');
+  });
+
+  // Process Button Listener (remains the same)
   processButton.addEventListener('click', async () => {
     statusMessage.textContent = 'Starting processing...';
-    resultsContainer.innerHTML = ''; // Clear previous results
-    let generatedCount = 0; // Count generated images
+    resultsContainer.innerHTML = '';
+    downloadAllSequentiallyButton.style.display = 'none';
+    generatedResultsData = [];
 
     const file1 = imageInput1.files[0];
     const file2 = imageInput2.files[0];
@@ -184,8 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
         img2 = await loadImage(file2);
       }
 
-      // Process each selected aspect ratio
       for (const arString of selectedAspectRatios) {
+        // ... (image processing logic remains the same) ...
         statusMessage.textContent = `Processing ratio ${arString}...`;
         const aspectRatio = parseAspectRatio(arString);
         const filename = generateOutputFilename(file1.name, file2?.name, arString);
@@ -226,32 +254,71 @@ document.addEventListener('DOMContentLoaded', () => {
           finalCtx.drawImage(tempCanvas2, 0, halfHeight, finalWidth, finalHeight - halfHeight);
         }
 
-        // Get data URL (JPEG format)
         const dataURL = finalCanvas.toDataURL('image/jpeg', 0.95);
-        generatedCount++; // Increment count
+        generatedResultsData.push({ filename: filename, dataURL: dataURL });
 
-        // Display result preview and individual download link
         const resultDiv = document.createElement('div');
         resultDiv.className = 'result-item';
-        // Ensure the <a> tag has the necessary attributes for direct download
         resultDiv.innerHTML = `
           <h4>${filename}</h4>
           <img src="${dataURL}" alt="${filename}" class="result-preview-img">
           <a href="${dataURL}" download="${filename}">Download ${arString}</a>
         `;
         resultsContainer.appendChild(resultDiv);
+      }
 
-      } // End loop through aspect ratios
-
-      statusMessage.textContent = `Processing complete. ${generatedCount} image(s) generated. Click links to download individually.`;
+      statusMessage.textContent = `Processing complete. ${generatedResultsData.length} image(s) generated. Click links or 'Download All' button.`;
+      if (generatedResultsData.length > 0) {
+        downloadAllSequentiallyButton.style.display = 'block';
+      }
 
     } catch (error) {
       console.error("Processing error:", error);
       statusMessage.textContent = `Error: ${error.message}`;
+      downloadAllSequentiallyButton.style.display = 'none';
     }
   });
 
-  // Download All button listener removed
+  // Sequential Download Button Listener (remains the same)
+  downloadAllSequentiallyButton.addEventListener('click', () => {
+    if (generatedResultsData.length === 0) {
+      statusMessage.textContent = "No results available to download.";
+      return;
+    }
+
+    statusMessage.textContent = `Attempting to download ${generatedResultsData.length} files sequentially... (Browser may block this)`;
+    downloadAllSequentiallyButton.disabled = true;
+
+    let currentFileIndex = 0;
+    const delayBetweenDownloads = 300;
+
+    function triggerDownload(index) {
+      if (index >= generatedResultsData.length) {
+        statusMessage.textContent = `Finished attempting downloads. Check your browser's download list/bar. Some files may have been blocked.`;
+        downloadAllSequentiallyButton.disabled = false;
+        return;
+      }
+
+      const result = generatedResultsData[index];
+      try {
+        const link = document.createElement('a');
+        link.href = result.dataURL;
+        link.download = result.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        statusMessage.textContent = `Triggered download for: ${result.filename} (${index + 1}/${generatedResultsData.length})`;
+      } catch (err) {
+          console.error(`Error triggering download for ${result.filename}:`, err);
+          statusMessage.textContent = `Error triggering download for ${result.filename}. Browser might be blocking downloads.`;
+      }
+
+      setTimeout(() => {
+        triggerDownload(index + 1);
+      }, delayBetweenDownloads);
+    }
+    triggerDownload(0);
+  });
 
   // --- Initial Setup ---
   pos2Group.style.display = 'none';
