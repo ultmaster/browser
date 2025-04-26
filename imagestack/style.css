@@ -1,3 +1,4 @@
+/* Use the previous CSS, ensuring no styles for #downloadAllButton exist */
 body {
   font-family: sans-serif;
   line-height: 1.6;
@@ -36,11 +37,24 @@ h1, h2 {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box; /* Include padding in width */
+  box-sizing: border-box;
 }
 
+.input-group select[multiple] {
+  height: auto;
+  min-height: 100px;
+}
+
+
 .input-group input[type="file"] {
-  padding: 3px; /* Less padding for file input */
+  padding: 3px;
+}
+
+.input-group small {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.85em;
+  color: #666;
 }
 
 button {
@@ -54,10 +68,16 @@ button {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
+  margin-top: 10px;
 }
 
 button:hover {
   background-color: #0056b3;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 .preview-img {
@@ -65,35 +85,72 @@ button:hover {
   max-height: 150px;
   margin-top: 10px;
   border: 1px solid #ddd;
-  display: block; /* Ensure it takes its own line */
+  display: block;
 }
 
-#outputCanvas {
-  display: block; /* Make canvas a block element */
-  margin: 20px auto; /* Center canvas */
-  max-width: 100%; /* Ensure canvas is responsive */
-  height: auto; /* Maintain aspect ratio */
-  background-color: #eee; /* Light background to see canvas area */
-  border: none; /* Initially no border */
+#resultsContainer {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
 }
 
-#downloadLink {
-  display: inline-block; /* Allow display: none later */
-  margin-top: 15px;
-  padding: 10px 15px;
-  background-color: #28a745;
+.result-item {
+  border: 1px solid #eee;
+  padding: 15px;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.result-item h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  word-wrap: break-word;
+}
+
+.result-preview-img {
+  max-width: 100%;
+  height: auto;
+  max-height: 200px;
+  display: block;
+  margin: 0 auto 10px auto;
+  border: 1px solid #ddd;
+}
+
+.result-item a {
+  display: inline-block;
+  padding: 8px 12px;
+  background-color: #6c757d;
   color: white;
   text-decoration: none;
-  border-radius: 5px;
+  border-radius: 4px;
+  font-size: 0.9em;
   transition: background-color 0.3s ease;
 }
 
-#downloadLink:hover {
-  background-color: #218838;
+.result-item a:hover {
+  background-color: #5a6268;
 }
 
 #statusMessage {
-  margin-top: 15px;
+  margin-top: 5px;
+  margin-bottom: 15px;
   font-weight: bold;
-  color: #dc3545; /* Default to error color, change dynamically if needed */
+  min-height: 1.2em;
+}
+
+#statusMessage:not(:empty) {
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+#statusMessage[style*="color: red"] { /* Or detect based on content */
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
 }

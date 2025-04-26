@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Stacker</title>
+  <title>Image Stack</title>
   <link rel="stylesheet" href="style.css">
-</head>
+  </head>
 <body>
-  <h1>Image Stacker Tool</h1>
+  <h1>Image Stack Tool</h1>
 
   <div class="controls">
     <div class="input-group">
@@ -23,8 +23,22 @@
     </div>
 
     <div class="input-group">
-      <label for="aspectRatioInput">Target Aspect Ratio:</label>
-      <input type="text" id="aspectRatioInput" value="3:4" placeholder="e.g., 5:7 or 16:9">
+      <label for="aspectRatioSelect">Target Aspect Ratio(s):</label>
+      <select id="aspectRatioSelect" multiple size="8" required>
+        <option value="1:1">1:1 (Square)</option>
+        <option value="1:2">1:2 (Tall)</option>
+        <option value="2:3">2:3 (Portrait)</option>
+        <option value="3:4" selected>3:4 (Portrait)</option>
+        <option value="4:5">4:5 (Portrait)</option>
+        <option value="5:7">5:7 (Photo)</option>
+        <option value="9:16">9:16 (Tall Screen)</option>
+        <option value="16:9">16:9 (Wide Screen)</option>
+        <option value="8:5">8:5 (Wide)</option>
+        <option value="4:3">4:3 (Landscape)</option>
+        <option value="3:2">3:2 (Landscape)</option>
+        <option value="2:1">2:1 (Wide)</option>
+      </select>
+      <small>Hold Ctrl/Cmd to select multiple.</small>
     </div>
 
     <div class="input-group" id="pos1-group">
@@ -46,18 +60,19 @@
         <option value="bottom">Bottom</option>
         <option value="left">Left</option>
         <option value="right">Right</option>
-       </select>
+     </select>
     </div>
 
     <button id="processButton">Process Image(s)</button>
   </div>
 
   <div class="results">
-    <h2>Result</h2>
+    <h2>Results</h2>
     <p id="statusMessage"></p>
-    <canvas id="outputCanvas"></canvas>
-    <a id="downloadLink" style="display: none;">Download Result</a>
-  </div>
+    <div id="resultsContainer"></div>
+    </div>
+
+  <canvas id="processingCanvas" style="display: none;"></canvas>
 
   <script src="script.js"></script>
 </body>
